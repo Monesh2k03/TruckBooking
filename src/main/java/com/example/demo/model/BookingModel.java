@@ -9,24 +9,32 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 
+
 @Entity
-public class UsersModel {
+public class BookingModel {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-	private String fname;
-	private String lname;
-	private String DOB;
-	private String email;
-	private String password;
-	private String role;
+	private Long bookingId;
+	private Long userId;
+	private Long driverId;
+	private String productName;
+	private int productLength;
+	private int productWidth;
+	private int productWeight;
+	private double pickUpLat;
+	private double pickUplon;
+	private String pickUpAddress;
+	private double dropLat;
+	private double droplon;
+	private String dropAddress;
+	private int bookingCharge;
+	private String bookingStatus;
 	private String date;
-	
-
 }

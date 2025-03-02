@@ -1,5 +1,6 @@
 package com.example.demo.model;
 
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -15,18 +16,19 @@ import lombok.Setter;
 @NoArgsConstructor
 
 @Entity
-public class UsersModel {
+public class VehicleModel {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-	private String fname;
-	private String lname;
-	private String DOB;
-	private String email;
-	private String password;
-	private String role;
-	private String date;
-	
+	private Long vehicleId;
+	private Long driverId;
+	private String plateNo;
+	private String driverLicense;
+	private int vechicleCapacity;
+	private int vechicleWidth;
+	private int vechicleLength;
+	private String vehicleType;
+	private int minimumCharge;
+	private int chargePerKm;
 
 }

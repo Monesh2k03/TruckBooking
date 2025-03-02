@@ -15,7 +15,7 @@ import lombok.Setter;
 @NoArgsConstructor
 
 @Entity
-public class UsersModel {
+public class DriverModel {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +26,7 @@ public class UsersModel {
 	private String email;
 	private String password;
 	private String role;
+	private boolean available;
 	private String date;
-	
 
 }

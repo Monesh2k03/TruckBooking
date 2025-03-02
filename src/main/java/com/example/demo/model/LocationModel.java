@@ -15,18 +15,13 @@ import lombok.Setter;
 @NoArgsConstructor
 
 @Entity
-public class UsersModel {
+public class LocationModel {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-	private String fname;
-	private String lname;
-	private String DOB;
-	private String email;
-	private String password;
-	private String role;
-	private String date;
+	private int id;
+	private Long driverId;
+	private double latitude;
+	private double Longitude;
 	
-
 }

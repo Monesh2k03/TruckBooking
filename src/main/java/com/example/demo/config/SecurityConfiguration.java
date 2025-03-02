@@ -9,7 +9,6 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -27,8 +26,8 @@ public class SecurityConfiguration {
 	public SecurityFilterChain securityFilter(HttpSecurity http) throws Exception {
 		return http
 				.csrf(Customizer -> Customizer.disable())
-				.authorizeHttpRequests(request -> request.requestMatchers("/admin/**").hasRole("ADMIN").requestMatchers("/users/**")
-						.hasAnyRole("ADMIN","USER").requestMatchers("/").permitAll().anyRequest().authenticated())
+				.authorizeHttpRequests(request -> request.requestMatchers("/driver/**").hasRole("DRIVER").requestMatchers("/users/**")
+						.hasAnyRole("DRIVER","USER").requestMatchers("/public/**").permitAll().requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll().anyRequest().authenticated())
 				.httpBasic(Customizer.withDefaults())
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.build();
