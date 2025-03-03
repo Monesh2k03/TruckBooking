@@ -97,9 +97,7 @@ public class UserService {
 			DriverModel driver = driverRepo.getById(findDriver.getDriverId());
 			if(driver != null) {
 				allDriver.add(driver);
-			}
-		}
-		
+			}}
 		for(DriverModel driverList : allDriver) {
 			
 			if(vehicle.getVechicleCapacity() < booking.getProductWeight() || vehicle.getVechicleWidth() < booking.getProductWidth() || 
@@ -107,7 +105,6 @@ public class UserService {
 				allDriver.remove(allDriver.indexOf(driverList));
 			}
 		}
-		
 		List<BookingModel> bookingResponse = new ArrayList<>();
 		
 		for(DriverModel chargeCal : allDriver) {
@@ -125,9 +122,6 @@ public class UserService {
 			
 			bookingResponse.add(booking);
 		}
-		
-		
-		
 		return bookingResponse;
 	}
 

@@ -27,7 +27,8 @@ public class SecurityConfiguration {
 		return http
 				.csrf(Customizer -> Customizer.disable())
 				.authorizeHttpRequests(request -> request.requestMatchers("/driver/**").hasRole("DRIVER").requestMatchers("/users/**")
-						.hasAnyRole("DRIVER","USER").requestMatchers("/public/**").permitAll().requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll().anyRequest().authenticated())
+						.hasAnyRole("DRIVER","USER").requestMatchers("/public/**").permitAll()
+						.requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll().anyRequest().authenticated())
 				.httpBasic(Customizer.withDefaults())
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.build();

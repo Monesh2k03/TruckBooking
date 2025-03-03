@@ -31,7 +31,8 @@ public class PublicController {
 		
 		Map<String,Object> response = new HashMap<>();
 		
-		if(user.getFname() != null || user.getLname() != null || user.getEmail() != null || user.getPassword()!= null || user.getDOB() != null) {
+		if(user.getFname() != null || user.getLname() != null || user.getEmail() != null || 
+				user.getPassword()!= null || user.getDOB() != null) {
 			UsersModel model = service.saveUsers(user);
 			response.put("message", model);
 			response.put("Status",HttpStatus.CREATED);
@@ -50,7 +51,8 @@ public class PublicController {
 	public ResponseEntity<Map<String,Object>> saveVehicle(@RequestBody DriverModel driver){
            Map<String,Object> response = new HashMap<>();
 		
-		if(driver.getFname() != null && driver.getLname() != null && driver.getDOB() != null && driver.getEmail() != null && driver.getPassword() != null && driver.getRole() != null) 
+		if(driver.getFname() != null && driver.getLname() != null && driver.getDOB() != null && driver.getEmail() != null &&
+				driver.getPassword() != null && driver.getRole() != null) 
 		{
 			driver.setAvailable(true);
 			
@@ -65,6 +67,4 @@ public class PublicController {
 		}
 		return new ResponseEntity<Map<String,Object>>(response,HttpStatus.OK);
 	}
-	
-
 }
