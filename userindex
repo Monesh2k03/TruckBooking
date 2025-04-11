@@ -1,0 +1,216 @@
+import { Component } from "react";
+import Navbar from "../Navbar";
+import UserForm from "./form";
+import {
+  Box, Chip, IconButton, Typography, Pagination, Stack, Container, Modal
+} from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+import { DataGrid } from "@mui/x-data-grid";
+
+// Static users
+const staticUsers = [
+  {
+    fname: "John", lname: "Doe", fullname: "John Doe", password: "12345",
+    date: "2024-01-01", course: "Computer Science", languages: ["English", "French"], district: "New York"
+  },
+  {
+    fname: "Jane", lname: "Smith", fullname: "Jane Smith", password: "54321",
+    date: "2024-02-15", course: "Mathematics", languages: ["Spanish"], district: "California"
+  },
+  {
+    fname: "Alice", lname: "Johnson", fullname: "Alice Johnson", password: "abc123",
+    date: "2024-03-20", course: "Physics", languages: ["English", "German"], district: "Texas"
+  },
+  {
+    fname: "Bob", lname: "Brown", fullname: "Bob Brown", password: "xyz456",
+    date: "2024-04-10", course: "Chemistry", languages: ["French"], district: "Florida"
+  },
+  {
+    fname: "Charlie", lname: "Davis", fullname: "Charlie Davis", password: "pass123",
+    date: "2024-05-05", course: "Biology", languages: ["English"], district: "Illinois"
+  },
+  {
+    fname: "Eva", lname: "Green", fullname: "Eva Green", password: "green123",
+    date: "2024-06-01", course: "Literature", languages: ["English", "Spanish"], district: "Nevada"
+  },
+  {
+    fname: "Frank", lname: "White", fullname: "Frank White", password: "white321",
+    date: "2024-07-22", course: "Art", languages: ["German"], district: "Oregon"
+  },
+  {
+    fname: "Grace", lname: "Lee", fullname: "Grace Lee", password: "grace456",
+    date: "2024-08-30", course: "Music", languages: ["Korean", "English"], district: "Washington"
+  },
+  {
+    fname: "Hank", lname: "Miller", fullname: "Hank Miller", password: "hm123",
+    date: "2024-09-15", course: "Engineering", languages: ["English"], district: "Arizona"
+  },
+  {
+    fname: "Ivy", lname: "Scott", fullname: "Ivy Scott", password: "ivy789",
+    date: "2024-10-01", course: "Medicine", languages: ["English", "Hindi"], district: "Ohio"
+  }
+];
+
+class Userindex extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      users: [], // Dynamic users
+      showModal: false,
+      selectedUser: null,
+      editingIndex: null,
+      currentPage: 1,
+      rowsPerPage: 5,
+    };
+  }
+
+  handleAddUser = (userData) => {
+    const { editingIndex, users } = this.state;
+    if (editingIndex !== null) {
+      const updatedUsers = [...users];
+      updatedUsers[editingIndex] = userData;
+      this.setState({ users: updatedUsers });
+    } else {
+      this.setState((prevState) => ({
+        users: [...prevState.users, userData],
+      }));
+    }
+    this.setState({
+      showModal: false,
+      editingIndex: null,
+      selectedUser: null,
+    });
+  };
+
+  openEditForm = (id) => {
+    const allUsers = [...staticUsers, ...this.state.users];
+    const user = allUsers.find((u, index) => index + 1 === id);
+    const dynamicIndex = id - staticUsers.length - 1;
+    this.setState({
+      selectedUser: user,
+      editingIndex: dynamicIndex >= 0 ? dynamicIndex : null,
+      showModal: true,
+    });
+  };
+
+  handlePageChange = (event, value) => {
+    this.setState({ currentPage: value });
+  };
+
+  render() {
+    const {
+      users, showModal, selectedUser, currentPage, rowsPerPage,
+    } = this.state;
+
+    const allUsers = [...staticUsers, ...users];
+    const indexOfLastRow = currentPage * rowsPerPage;
+    const indexOfFirstRow = indexOfLastRow - rowsPerPage;
+    const currentUsers = allUsers.slice(indexOfFirstRow, indexOfLastRow);
+    const totalPages = Math.ceil(allUsers.length / rowsPerPage);
+
+    const columns = [
+      { field: "id", headerName: "#", width: 70 },
+      { field: "fname", headerName: "First Name", width: 120 },
+      { field: "lname", headerName: "Last Name", width: 120 },
+      { field: "fullname", headerName: "Full Name", width: 150 },
+      { field: "password", headerName: "Password", width: 120 },
+      { field: "date", headerName: "Date", width: 120 },
+      { field: "course", headerName: "Department", width: 130 },
+      {
+        field: "languages",
+        headerName: "Languages",
+        width: 180,
+        renderCell: (params) => (
+          <Typography variant="body2">
+            {Array.isArray(params.row.languages) && params.row.languages.length > 0
+              ? params.row.languages.join(', ')
+              : '—'}
+          </Typography>
+        ),
+      },
+      { field: "district", headerName: "District", width: 130 },
+    ];
+
+    const rows = currentUsers.map((user, index) => ({
+      id: indexOfFirstRow + index + 1,
+      ...user,
+    }));
+
+    return (
+      <Container maxWidth="xl" sx={{ backgroundColor: "#f9f9f9", minHeight: "100vh" }}>
+        <Navbar />
+        <Box sx={{ display: "flex", mt: 2, paddingLeft: '20px' }}>
+          <Chip
+            label="UserForm +"
+            sx={{ backgroundColor: "pink", fontSize: 13, mb: 4 }}
+            onClick={() => this.setState({ showModal: true, selectedUser: null, editingIndex: null })}
+          />
+        </Box>
+        {allUsers.length > 0 ? (
+          <Box>
+            <DataGrid
+              rows={rows}
+              columns={columns}
+              pageSize={rowsPerPage}
+              disableSelectionOnClick
+              hideFooterPagination
+              onRowClick={(params) => this.openEditForm(params.row.id)}
+              sx={{ backgroundColor: "white", borderRadius: 2 }}
+            />
+            <Stack spacing={2} alignItems="center" mt={2}>
+              <Pagination
+                count={totalPages}
+                page={currentPage}
+                onChange={this.handlePageChange}
+                color="primary"
+              />
+            </Stack>
+          </Box>
+        ) : (
+          <Typography align="center" color="text.secondary" mt={4}>
+            No users registered yet.
+          </Typography>
+        )}
+
+        {/* Modal */}
+        <Modal
+          open={showModal}
+          onClose={() => this.setState({ showModal: false })}
+          aria-labelledby="user-form-modal"
+        >
+          <Box
+            sx={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              bgcolor: 'background.paper',
+              boxShadow: 24,
+              p: 3,
+              minWidth: '30vw',
+              borderRadius: 2,
+            }}
+          >
+            <IconButton
+              onClick={() => this.setState({ showModal: false })}
+              sx={{
+                position: 'absolute',
+                top: 8,
+                right: 8,
+                color: (theme) => theme.palette.grey[500],
+              }}
+            >
+              <CloseIcon />
+            </IconButton>
+            <Typography variant="h6" mb={2} id="user-form-modal">
+              {selectedUser ? 'Edit User' : 'Register User'}
+            </Typography>
+            <UserForm onSubmit={this.handleAddUser} initialData={selectedUser} />
+          </Box>
+        </Modal>
+      </Container>
+    );
+  }
+}
+
+export default Userindex;
