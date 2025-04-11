@@ -1,0 +1,145 @@
+import React, { useState } from 'react';
+import {
+  Container, Grid, Chip, Typography, Modal, Box, IconButton
+} from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import { DataGrid } from '@mui/x-data-grid';
+import CustomerForm from './form';
+import Navbar from '../Navbar';
+
+// Static data
+const staticUsers = [
+  { id: 1, fname: 'John', lname: 'Doe', fullname: 'John Doe', password: '1234', date: '1990-01-01', course: 'Fullstack', languages: ['HTML', 'CSS'], district: 'Chennai' },
+  { id: 2, fname: 'Jane', lname: 'Smith', fullname: 'Jane Smith', password: 'abcd', date: '1992-05-10', course: 'Frontend', languages: ['Javascript'], district: 'Kanchipuram' },
+  { id: 3, fname: 'Alex', lname: 'Lee', fullname: 'Alex Lee', password: 'pass', date: '1988-07-12', course: 'Backend', languages: ['Bootstrap'], district: 'Ranipet' },
+  { id: 4, fname: 'Emma', lname: 'Watson', fullname: 'Emma Watson', password: 'emma123', date: '1993-03-15', course: 'Frontend', languages: ['HTML', 'CSS'], district: 'Tiruvallur' },
+  { id: 5, fname: 'Chris', lname: 'Brown', fullname: 'Chris Brown', password: 'cbpass', date: '1991-11-22', course: 'Fullstack', languages: ['Javascript', 'Bootstrap'], district: 'Chennai' },
+  { id: 6, fname: 'Maya', lname: 'Singh', fullname: 'Maya Singh', password: 'maya@123', date: '1995-06-25', course: 'Backend', languages: ['HTML', 'CSS'], district: 'Ranipet' },
+  { id: 7, fname: 'Liam', lname: 'Neeson', fullname: 'Liam Neeson', password: 'taken', date: '1985-09-09', course: 'Frontend', languages: ['Javascript'], district: 'Kanchipuram' },
+  { id: 8, fname: 'Olivia', lname: 'Taylor', fullname: 'Olivia Taylor', password: 'olivia1', date: '1996-12-30', course: 'Fullstack', languages: ['Bootstrap', 'CSS'], district: 'Tiruvallur' },
+  { id: 9, fname: 'Ryan', lname: 'Reynolds', fullname: 'Ryan Reynolds', password: 'deadpool', date: '1986-08-15', course: 'Frontend', languages: ['HTML', 'Javascript'], district: 'Chennai' },
+  { id: 10, fname: 'Sophia', lname: 'Khan', fullname: 'Sophia Khan', password: 'sophia99', date: '1994-04-18', course: 'Backend', languages: ['CSS', 'Bootstrap'], district: 'Kanchipuram' }
+];
+
+const CustomerIndex = () => {
+  const [dynamicUsers, setUsers] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [editingIndex, setEditingIndex] = useState(null);
+
+  const allUsers = [...staticUsers, ...dynamicUsers];
+
+  const handleAddUser = (userData) => {
+    if (editingIndex === -1) {
+      alert("Editing static users is not allowed.");
+    } else if (editingIndex !== null) {
+      const updatedUsers = [...dynamicUsers];
+      updatedUsers[editingIndex] = { ...userData, id: updatedUsers[editingIndex].id };
+      setUsers(updatedUsers);
+    } else {
+      const newId = staticUsers.length + dynamicUsers.length + 1;
+      setUsers((prev) => [...prev, { ...userData, id: newId }]);
+    }
+
+    setShowModal(false);
+    setEditingIndex(null);
+    setSelectedUser(null);
+  };
+
+  const openEditForm = (params) => {
+    const dynIndex = dynamicUsers.findIndex((user) => user.id === params.id);
+    if (dynIndex !== -1) {
+      setSelectedUser(dynamicUsers[dynIndex]);
+      setEditingIndex(dynIndex);
+    } else {
+      const staticUser = staticUsers.find((user) => user.id === params.id);
+      if (staticUser) {
+        setSelectedUser(staticUser);
+        setEditingIndex(-1);
+      }
+    }
+    setShowModal(true);
+  };
+
+  const columns = [
+    { field: 'id', headerName: '#', width: 60 },
+    { field: 'fname', headerName: 'First Name', width: 130 },
+    { field: 'lname', headerName: 'Last Name', width: 130 },
+    { field: 'fullname', headerName: 'Full Name', width: 160 },
+    { field: 'password', headerName: 'Password', width: 130 },
+    { field: 'date', headerName: 'Date', width: 120 },
+    { field: 'course', headerName: 'Department', width: 130 },
+    {
+      field: 'languages',
+      headerName: 'Languages',
+      width: 200,
+      renderCell: (params) => (
+        <Typography variant="body2">
+          {Array.isArray(params.row.languages) && params.row.languages.length > 0
+            ? params.row.languages.join(', ')
+            : '—'}
+        </Typography>
+      )
+    },
+    { field: 'district', headerName: 'District', width: 150 }
+  ];
+
+  return (
+    <Container maxWidth="xl" sx={{ backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
+      <Navbar />
+      <Grid container spacing={2} alignItems="center" sx={{ mb: 2, mt: 3 }}>
+        <Grid item>
+          <Chip
+            label="CustomerForm +"
+            onClick={() => {
+              setShowModal(true);
+              setSelectedUser(null);
+              setEditingIndex(null);
+            }}
+            sx={{ backgroundColor: 'pink', fontSize: '13px' }}
+          />
+        </Grid>
+      </Grid>
+
+      <Grid container justifyContent="center">
+        <Grid item xs={12} md={11}>
+          <DataGrid
+            sx={{ backgroundColor: 'white', borderRadius: 2, boxShadow: 2 }}
+            rows={allUsers}
+            columns={columns}
+            pageSize={5}
+            rowsPerPageOptions={[5]}
+            onRowClick={openEditForm}
+          />
+        </Grid>
+      </Grid>
+
+      <Modal open={showModal} onClose={() => setShowModal(false)}>
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            bgcolor: 'background.paper',
+            boxShadow: 24,
+            borderRadius: 2,
+            minWidth: '30vw'
+          }}
+        >
+          <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+            <Typography id="modal-title" variant="h6" sx={{ ml: 1 }}>
+              Customer Form
+            </Typography>
+            <IconButton onClick={() => setShowModal(false)}>
+              <CloseIcon />
+            </IconButton>
+          </Box>
+          <CustomerForm onSubmit={handleAddUser} initialData={selectedUser} />
+        </Box>
+      </Modal>
+    </Container>
+  );
+};
+
+export default CustomerIndex;
