@@ -1,0 +1,30 @@
+import { useNavigate } from "react-router-dom";
+import { Box, Chip, Container} from "@mui/material";
+
+const Navbar = () => {
+  const navigate = useNavigate();
+
+  const customer = () => navigate('/');
+  const user = () => navigate('/user');
+
+  return (
+    <Box sx={{ backgroundColor: '#f8f9fa', borderBottom: 1, borderColor: 'divider', py: 2 }}>
+      <Container maxWidth="md">
+        <Box sx={{ display: 'flex', gap: 3,marginLeft:'-230px'}}>
+          <Chip
+            onClick={customer}
+            label="Customer Form"
+            sx={{ backgroundColor: 'pink', fontSize: '13px', cursor: 'pointer' }}
+          />
+          <Chip
+            onClick={user}
+            label="UserForm Form"
+            sx={{ backgroundColor: 'pink', fontSize: '13px', cursor: 'pointer' }}
+          />
+        </Box>
+      </Container>
+    </Box>
+  );
+};
+
+export default Navbar;
