@@ -1,0 +1,224 @@
+import React, { Component } from 'react';
+import {
+  TextField, Button, Radio, RadioGroup, FormControlLabel, FormControl,
+  FormLabel, Checkbox, FormGroup, Select, MenuItem, InputLabel, Typography,
+  Grid, Box, Card
+} from '@mui/material';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import dayjs from 'dayjs';
+
+class UserForm extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      fname     : '',
+      lname     : '',
+      password  : '',
+      date      : '',
+      course    : '',
+      languages : [],
+      district  : '',
+    };
+  }
+
+  componentDidMount() {
+    if (this.props.initialData) {
+      this.setState({ ...this.props.initialData });
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    if (
+      this.props.initialData &&
+      prevProps.initialData !== this.props.initialData
+    ) {
+      console.log('initialData:', this.props.initialData); // 🔍 Debug
+      const { languages, ...rest } = this.props.initialData;
+  
+      this.setState({
+        ...rest,
+        languages: Array.isArray(languages)
+          ? languages
+          : typeof languages === 'string'
+          ? languages.split(',').map((lang) => lang.trim())
+          : [],
+      });
+    }
+  }
+  
+
+  handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    if (type === 'checkbox') {
+      this.setState((prevState) => ({
+        languages: checked
+          ? [...prevState.languages, value]
+          : prevState.languages.filter((lang) => lang !== value),
+      }));
+    } else {
+      this.setState({ [name]: value });
+    }
+  };
+
+  handleDateChange = (newDate) => {
+    this.setState({ date: newDate ? dayjs(newDate).format('YYYY-MM-DD') : '' });
+  };
+
+  handleReset = () => {
+    this.setState({
+      fname    : '',
+      lname    : '',
+      password : '',
+      date     : '',
+      course   : '',
+      languages: [],
+      district : '',
+    });
+  };
+
+  handleSubmit = () => {
+    const { fname, lname, password, date, course, languages, district } = this.state;
+    if (!fname || !lname || !password || !date || !course || languages.length === 0 || !district) {
+      alert('Please fill all fields and select at least one language.');
+      return;
+    }
+    const fullname = `${fname} ${lname}`;
+    const formData = { ...this.state, fullname };
+    this.props.onSubmit(formData);
+    this.handleReset();
+  };
+
+  render() {
+    const { fname, lname, password, date, course, languages, district } = this.state;
+
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+        <Card sx={{ width: '100%', maxWidth: 550, p: 4, boxShadow: 3 }}>
+          <Typography variant="h5" align="center" gutterBottom>
+            User Form
+          </Typography>
+
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth label="First Name" name="fname"
+                value={fname} onChange={this.handleChange}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth 
+                label    ="Last Name"
+                name     ="lname"
+                value    ={lname} 
+                onChange ={this.handleChange}
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <TextField
+                fullWidth 
+                label="Full Name"
+                value={`${fname} ${lname}`}
+                disabled
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <TextField
+                fullWidth 
+                label    ="Password" 
+                type     ="password"
+                name     ="password"
+                value    ={password}
+                onChange ={this.handleChange}
+              />
+            </Grid>
+
+            <Grid item xs={12} sx={{ width: "95%" }}>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DatePicker
+                  label    ="Date of Birth"
+                  value    ={date ? dayjs(date) : null}
+                  onChange ={this.handleDateChange}
+                  slotProps={{ textField: { fullWidth: true } }}
+                />
+              </LocalizationProvider>
+            </Grid>
+
+            <Grid item xs={12}>
+              <FormControl fullWidth component="fieldset">
+                <FormLabel>Course</FormLabel>
+                <RadioGroup
+                  row 
+                  name     ="course"
+                  value    ={course}
+                  onChange ={this.handleChange}>
+                  {['FrontEnd', 'Backend', 'Fullstack'].map((option) => (
+                    <FormControlLabel
+                      key    ={option} 
+                      value  ={option}
+                      control={<Radio />} 
+                      label  ={option}
+                    />
+                  ))}
+                </RadioGroup>
+              </FormControl>
+            </Grid>
+
+            <Grid item xs={12}>
+              <FormControl component="fieldset" fullWidth>
+                <FormLabel>Languages</FormLabel>
+                <FormGroup row>
+                  {['HTML', 'CSS', 'Bootstrap', 'Javascript'].map((lang) => (
+                    <FormControlLabel
+                      key={lang}
+                      control={
+                        <Checkbox
+                          name     ="languages" value={lang}
+                          checked  ={languages.includes(lang)}
+                          onChange ={this.handleChange}/>
+                      }
+                      label={lang}
+                    />
+                  ))}
+                </FormGroup>
+              </FormControl>
+            </Grid>
+
+            <Grid item xs={12} sx={{ width: "95%" }}>
+              <FormControl fullWidth>
+                <InputLabel>District</InputLabel>
+                <Select
+                  name="district" label="District"
+                  value={district} onChange={this.handleChange}
+                >
+                  <MenuItem value="">-- Select District --</MenuItem>
+                  <MenuItem value="Chennai">Chennai</MenuItem>
+                  <MenuItem value="Tiruvallur">Tiruvallur</MenuItem>
+                  <MenuItem value="Kanchipuram">Kanchipuram</MenuItem>
+                  <MenuItem value="Ranipet">Ranipet</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+
+            <Grid item xs={6}>
+              <Button variant="contained" color="primary" fullWidth onClick={this.handleSubmit}>
+                Submit
+              </Button>
+            </Grid>
+            <Grid item xs={6}>
+              <Button variant="outlined" color="secondary" fullWidth onClick={this.handleReset}>
+                Reset
+              </Button>
+            </Grid>
+          </Grid>
+        </Card>
+      </Box>
+    );
+  }
+}
+
+export default UserForm;
